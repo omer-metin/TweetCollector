@@ -45,7 +45,7 @@ MISSING_DATES_TRIAL_COUNT = args.missing_run_count
 
 print(f"Collector is starting with {THREAD_COUNT} threads.")
 
-db_conn = TweetDB(f"TICKER_{DATE_START}-{DATE_END}")
+db_conn = TweetDB(f"{TICKER}_{DATE_START.year}-{DATE_END.year}")
 db_conn.create_tables()
 
 container_pool = [list() for _ in range(THREAD_COUNT)]
