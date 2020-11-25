@@ -27,7 +27,7 @@ class TweetDB:
         """Creates needed tables if they does not exists. """
         with self.conn:
             self.c.execute(
-                f"""
+                """
                     CREATE TABLE IF NOT EXISTS Tweet (
                         tweet_id        INTEGER     PRIMARY KEY,
                         writer          TEXT        NOT NULL,
@@ -46,7 +46,7 @@ class TweetDB:
             self.c.execute(
                 "CREATE INDEX IF NOT EXISTS IX_writer ON Tweet (writer);")
             self.c.execute(
-                f"""
+                """
                     CREATE TABLE IF NOT EXISTS Writer (
                         user_id         TEXT        PRIMARY KEY,
                         username        TEXT        NOT NULL,
@@ -62,7 +62,7 @@ class TweetDB:
                 """
             )
             self.c.execute(
-                f"""
+                """
                     CREATE TABLE IF NOT EXISTS Company (
                         ticker_symbol   TEXT        PRIMARY KEY,
                         company_name    TEXT        NOT NULL
@@ -70,7 +70,7 @@ class TweetDB:
                 """
             )
             self.c.execute(
-                f"""
+                """
                     CREATE TABLE IF NOT EXISTS Company_Tweet (
                         tweet_id        INTEGER,
                         ticker_symbol   TEXT,
@@ -172,7 +172,7 @@ class TweetDB:
             print(f"Existing tweet: {tweet.tweet_id}")
         try:
             self.c.execute(
-                f"""
+                """
                     INSERT INTO Company_Tweet VALUES (
                         :tweet_id,
                         :ticker_symbol

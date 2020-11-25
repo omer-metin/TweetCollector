@@ -1,5 +1,4 @@
 import time
-from tweet import Tweet
 
 
 class Writer:
