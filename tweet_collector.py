@@ -11,9 +11,9 @@ argv_parser = argparse.ArgumentParser()
 argv_parser.add_argument('-c', '--company_ticker', type=str, required=True,
                          help="company ticker that will be searched")
 argv_parser.add_argument('-s', '--start_date', type=str, required=True,
-                         help="starting date for search as YYYY-MM-DD")
+                         help="starting date for search in YYYY-MM-DD format")
 argv_parser.add_argument('-e', '--end_date', type=str, required=True,
-                         help="final date for search as YYYY-MM-DD")
+                         help="final date for search in YYYY-MM-DD format")
 argv_parser.add_argument('-u', '--username', type=str, required=True,
                          help="username of twitter account")
 argv_parser.add_argument('-p', '--password', type=str, required=True,
@@ -52,6 +52,8 @@ container_pool = [list() for _ in range(THREAD_COUNT)]
 
 
 def get_missing_dates(reverse_sorted: bool = False) -> list:
+    """Returns missing dates between DATE_START and DATE_END 
+    that are fetched from database"""
     c = db_conn.conn.cursor()
     c.execute("SELECT DISTINCT post_date FROM Tweet")
     collected_dates = set([datetime.date.fromtimestamp(i[0])
@@ -65,6 +67,7 @@ def get_missing_dates(reverse_sorted: bool = False) -> list:
 
 
 def search_tweets_by_date_to_container(date: datetime.date, container: list):
+    """Main searching function that runs on thread"""
     collector = Collector(USERNAME, PASSWORD, chromePath=CHROMEDRIVER_PATH)
 
     from_ = date
@@ -83,12 +86,15 @@ def search_tweets_by_date_to_container(date: datetime.date, container: list):
 
 
 def container_collection(container: list):
+    """pushes content of container to database and empties the container"""
     while len(container) > 0:
         db_conn.insert_tweet(container.pop())
     db_conn.conn.commit()
 
 
 def collection_process(dates_list: list):
+    """Searching process controller funtion. 
+    Opens threads and manages containers"""
     while len(dates_list) > 0:
         if len(container_pool) > 0:
             process_container = container_pool.pop()
@@ -114,11 +120,14 @@ def collection_process(dates_list: list):
 
 t0 = time.time()
 
+# extract dates
 target_dates = sorted([DATE_START + datetime.timedelta(days=i)
                        for i in range((DATE_END-DATE_START).days)],
                       reverse=True)
+# start collection
 collection_process(target_dates)
 
+# start collection for missing dates
 for _ in range(MISSING_DATES_TRIAL_COUNT):
     missing_dates = get_missing_dates(reverse_sorted=True)
     print(f"Number of missing days: {len(missing_dates)}")
