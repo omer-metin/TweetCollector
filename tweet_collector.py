@@ -12,7 +12,10 @@ from tweetDB import TweetDB
 argv_parser = argparse.ArgumentParser()
 # Search parameters
 argv_parser.add_argument('-k', '--searchKey', type=str, required=True,
-                         help="search key that will be searched")
+                         help="search-key that will be searched")
+argv_parser.add_argument('-a', '--search_as', type=str, default='tag',
+                         choices=['tag', 'stock', 'word'],
+                         help="search key as a tag(#), stock($) or word")
 argv_parser.add_argument('-s', '--start_date', type=str, required=True,
                          help="starting date for search in YYYY-MM-DD format")
 argv_parser.add_argument('-e', '--end_date', type=str, required=True,
@@ -57,7 +60,22 @@ else:
 if not os.path.isfile(CHROMEDRIVER_PATH):
     raise ValueError(f"missing chromedriver file: {CHROMEDRIVER_PATH}")
 
-KEY = args.searchKey
+if args.search_as == 'tag':
+    if args.searchKey.startswith('$'):
+        print("WARNING: key starts with '$' but search_as selected as 'tag'. Consider using '-a stock'")
+    SEARCH_AS = '%23'
+elif args.search_as == 'stock':
+    if args.searchKey.startswith('#'):
+        print("WARNING: key starts with '#' but search_as selected as 'stock'. Consider using '-a tag'")
+    SEARCH_AS = '%24'
+elif args.search_as == 'word':
+    if args.searchKey.startswith('$'):
+        print("WARNING: key starts with '$' but search_as selected as 'word'. Consider using '-a word'")
+    elif args.searchKey.startswith('#'):
+        print("WARNING: key starts with '#' but search_as selected as 'word'. Consider using '-a word'")
+    SEARCH_AS = ''
+
+KEY = args.searchKey.replace('$', '').replace('#', '')
 
 DATE_START = datetime.datetime.strptime(args.start_date, "%Y-%m-%d").date()
 DATE_END = datetime.datetime.strptime(args.end_date, "%Y-%m-%d").date()
@@ -97,7 +115,7 @@ def search_tweets_by_date_to_container(date: datetime.date, container: list):
     print(f"Collecting {KEY}: {from_} - {to_}")
 
     try:
-        collector.search(f"${KEY}", tabName='live', from_=from_, to_=to_)
+        collector.search(SEARCH_AS + KEY, tabName='live', from_=from_, to_=to_)
         collector.retrieve_tweets_to_container(KEY, container)
     except WebDriverException as e:
         print(f"An error occured in browser:\n{str(e)}\nClosing browser...")

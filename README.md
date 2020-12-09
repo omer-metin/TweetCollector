@@ -14,13 +14,16 @@ To collect large amount of tweet without struggling with Twitter, requires twitt
  -  `-k, --searchKey KEY` (required)
     search key will be searched
 
+ -  `-a, --search_as [tag, stock, word]` (default: _`tag`_)
+    search method _`tag`_ -> _`$`_, _`stock`_ -> _`$`_ and _`word`_ is direct word search
+
  -  `-s, --start_date START_DATE` (required) 
     starting date for search in YYYY-MM-DD format
 
  -  `-e, --end_date END_DATE` (required)
     final date for search in YYYY-MM-DD format
 
- -  `-f, --settings_file` (required) (default: _`True`_)
+ -  `-f, --settings_file BOOL` (required) (default: _`True`_)
     use settings.json file (ignore setting parameters)
 
  -  `-u, --username USERNAME`  
