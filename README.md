@@ -41,13 +41,38 @@ To collect large amount of tweet without struggling with Twitter, requires twitt
  -  `-m, --missing_run_count MISSING_RUN_COUNT` (default: _`1`_)
     re-run number for missings dates 
 
-
+### Examples
+ - #### Using _settings.json_ file
+    Example settings file
+    ```json
+    {
+        "username": "*******",
+        "password": "*******",
+        "chromedriver_path": "chromedriver.exe",
+        "thread_count": 0,
+        "missing_run_count": 1
+    }
+    ```
+    Running code
+    ```bash
+    python tweet_collector.py -k AAPL -a stock -s 2020-07-28 -e 2020-08-28 -f True
+    ```
+ - #### Without _settings.json_ file
+    ```
+    Running code
+    ```bash
+    python tweet_collector.py -k AAPL -a stock -s 2020-07-28 -e 2020-08-28 -f False -u ******* -p *******
+    ```
 ## Requirements
 
-- ### Selenium
-    ```bash
-    pip install selenium
-    ```
+- #### Python 3.6+ 
+    _written in 3.7.9_
+
+- #### Selenium 
+    You can install by using *_[pip](https://pypi.org/project/selenium/)_*
+
+- #### chromedriver
+    You can get proper version from *_[chromedriver](https://chromedriver.chromium.org/downloads)_*
 
 ## License
 
