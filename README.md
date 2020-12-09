@@ -20,20 +20,23 @@ To collect large amount of tweet without struggling with Twitter, requires twitt
  -  `-e, --end_date END_DATE` (required)
     final date for search in YYYY-MM-DD format
 
- -  `-u, --username USERNAME` (required) 
+ -  `-f, --settings_file` (required) (default: _`True`_)
+    use settings.json file (ignore setting parameters)
+
+ -  `-u, --username USERNAME`  
     username of twitter account
 
- -  `-p, --password PASSWORD` (required) 
+ -  `-p, --password PASSWORD`  
     password of twitter account
 
- -  `-d, --chromedriver_path CHROMEDRIVER_PATH` 
-    chromedriver path that is used (default: `chromedriver`)
+ -  `-d, --chromedriver_path CHROMEDRIVER_PATH` (default: _`chromedriver.exe`_)
+    chromedriver path that is used 
 
- -  `-t, --thread_count THREAD_COUNT`  
-    number of thread that is used in program (default: `0`)
+ -  `-t, --thread_count THREAD_COUNT` (default: _`0`_)
+    number of thread that is used in program 
 
- -  `-m, --missing_run_count MISSING_RUN_COUNT`
-    re-run number for missings dates (default: `1`)
+ -  `-m, --missing_run_count MISSING_RUN_COUNT` (default: _`1`_)
+    re-run number for missings dates 
 
 
 # Requirements
