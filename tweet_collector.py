@@ -1,5 +1,7 @@
 import argparse
 import datetime
+import json
+import os
 import time
 from multiprocessing import cpu_count
 from threading import Thread
@@ -8,31 +10,52 @@ from collector import Collector, WebDriverException
 from tweetDB import TweetDB
 
 argv_parser = argparse.ArgumentParser()
+# Search parameters
 argv_parser.add_argument('-c', '--company_ticker', type=str, required=True,
                          help="company ticker that will be searched")
 argv_parser.add_argument('-s', '--start_date', type=str, required=True,
                          help="starting date for search in YYYY-MM-DD format")
 argv_parser.add_argument('-e', '--end_date', type=str, required=True,
                          help="final date for search in YYYY-MM-DD format")
-argv_parser.add_argument('-u', '--username', type=str, required=True,
+# Setting parameters
+argv_parser.add_argument('-f', '--settings_file', type=bool, required=True, default=True,
+                         help="use settings.json file (ignore setting parameters)")
+argv_parser.add_argument('-u', '--username', type=str, required=False,
                          help="username of twitter account")
-argv_parser.add_argument('-p', '--password', type=str, required=True,
+argv_parser.add_argument('-p', '--password', type=str, required=False,
                          help="password of twitter account")
-argv_parser.add_argument('-d', '--chromedriver_path', type=str,
+argv_parser.add_argument('-d', '--chromedriver_path', type=str, required=False,
                          default='chromedriver',
                          help="chromedriver path that is used")
-argv_parser.add_argument('-t', '--thread_count', type=int, default=0,
+argv_parser.add_argument('-t', '--thread_count', type=int, default=0, required=False,
                          help="number of thread that is used in program")
-argv_parser.add_argument('-m', '--missing_run_count', type=int, default=1,
+argv_parser.add_argument('-m', '--missing_run_count', type=int, default=1, required=False,
                          help="re-run number for missings dates")
 args = argv_parser.parse_args()
 
+if args.settings_file:
+    with open("settings.json", 'r') as settings_file:
+        settings = json.load(settings_file)
 
-USERNAME = args.username
-PASSWORD = args.password
+    USERNAME = settings["username"]
+    PASSWORD = settings["password"]
 
-CHROMEDRIVER_PATH = args.chromedriver_path
-THREAD_COUNT = args.thread_count if args.thread_count else (cpu_count()-1) * 2
+    CHROMEDRIVER_PATH = settings["chromedriver_path"]
+    THREAD_COUNT = (settings["thread_count"]
+                    if settings["thread_count"] else cpu_count() * 2 - 1)
+
+    MISSING_DATES_TRIAL_COUNT = settings["missing_run_count"]
+else:
+    USERNAME = args.username
+    PASSWORD = args.password
+
+    CHROMEDRIVER_PATH = args.chromedriver_path
+    THREAD_COUNT = args.thread_count if args.thread_count else cpu_count() * 2 - 1
+
+    MISSING_DATES_TRIAL_COUNT = args.missing_run_count
+
+if not os.path.isfile(CHROMEDRIVER_PATH):
+    raise ValueError(f"missing chromedriver file: {CHROMEDRIVER_PATH}")
 
 TICKER = args.company_ticker
 
@@ -41,11 +64,9 @@ DATE_END = datetime.datetime.strptime(args.end_date, "%Y-%m-%d").date()
 DAY = datetime.timedelta(days=1)
 STEP = 1
 
-MISSING_DATES_TRIAL_COUNT = args.missing_run_count
-
 print(f"Collector is starting with {THREAD_COUNT} threads.")
 
-db_conn = TweetDB(f"{TICKER}_{DATE_START.year}-{DATE_END.year}")
+db_conn = TweetDB(f"{TICKER}_{DATE_START}-{DATE_END}")
 db_conn.create_tables()
 
 container_pool = [list() for _ in range(THREAD_COUNT)]
