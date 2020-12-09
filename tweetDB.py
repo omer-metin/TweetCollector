@@ -63,18 +63,10 @@ class TweetDB:
             )
             self.c.execute(
                 """
-                    CREATE TABLE IF NOT EXISTS Company (
-                        ticker_symbol   TEXT        PRIMARY KEY,
-                        company_name    TEXT        NOT NULL
-                    )
-                """
-            )
-            self.c.execute(
-                """
-                    CREATE TABLE IF NOT EXISTS Company_Tweet (
+                    CREATE TABLE IF NOT EXISTS SearchKey_Tweet (
                         tweet_id        INTEGER,
-                        ticker_symbol   TEXT,
-                        PRIMARY KEY (tweet_id, ticker_symbol)
+                        searchKey       TEXT,
+                        PRIMARY KEY (tweet_id, searchKey)
                     )
                 """
             )
@@ -173,19 +165,19 @@ class TweetDB:
         try:
             self.c.execute(
                 """
-                    INSERT INTO Company_Tweet VALUES (
+                    INSERT INTO SearchKey_Tweet VALUES (
                         :tweet_id,
-                        :ticker_symbol
+                        :searchKey
                     )
                 """,
                 {
                     'tweet_id': tweet.tweet_id,
-                    'ticker_symbol': tweet.ticker_symbol
+                    'searchKey': tweet.searchKey
                 }
             )
         except sqlite3.IntegrityError:
             print(
-                f"Existing tweet-company pair: {tweet.tweet_id}-{tweet.ticker_symbol}")
+                f"Existing tweet-searchKey pair: {tweet.tweet_id}-{tweet.searchKey}")
 
     def insert_tweet(self, tweet: Tweet) -> None:
         """
@@ -221,14 +213,14 @@ class TweetDB:
             for tweet in tweets:
                 self.insert_tweet(tweet)
 
-    def _get_tweets_by_query(self, query: str, ticker_symbol: str) -> list:
+    def _get_tweets_by_query(self, query: str, searchKey: str) -> list:
         """
             Recieves tweets from database with given query.
 
                 Args:
                     `query` (str): SQLite query that will be executed
                                    (e.g. `"SELECT * FROM Tweet"`)
-                    `ticker_sybol` (str): company ticker symbol
+                    `searchKey` (str): search key
 
                 Returns:
                     A list that contains Tweet instances created from executed
@@ -241,33 +233,33 @@ class TweetDB:
                                 writer=row[1],
                                 post_date=time.localtime(row[2]),
                                 body=row[3],
-                                ticker_symbol=ticker_symbol,
+                                searchKey=searchKey,
                                 comment_num=row[4],
                                 retweet_num=row[5],
                                 like_num=row[6]))
 
         return tweets
 
-    def get_tweet(self, tweet_id, ticker_symbol) -> Tweet:
+    def get_tweet(self, tweet_id, searchKey) -> Tweet:
         return self._get_tweets_by_query(
-            f"SELECT * FROM Tweet WHERE tweet_id={tweet_id}", ticker_symbol)[0]
+            f"SELECT * FROM Tweet WHERE tweet_id={tweet_id}", searchKey)[0]
 
-    def get_company_tweets(self, ticker_symbol) -> list:
+    def get_searchKey_tweets(self, searchKey) -> list:
         return self._get_tweets_by_query(
             f"""
                 SELECT * 
                 FROM Tweet
                 WHERE tweet_id=(
                     SELECT tweet_id
-                    FROM Company_Tweet
-                    WHERE ticker_symbol='{ticker_symbol}'
+                    FROM SearchKey_Tweet
+                    WHERE searchKey='{searchKey}'
                 )
             """,
-            ticker_symbol
+            searchKey
         )
 
-    def get_companies(self):
-        self.c.execute("SELECT * FROM Company")
+    def get_searchKeys(self):
+        self.c.execute("SELECT DISTINCT searchKey FROM SearchKey_Tweet")
         return self.c.fetchall()
 
     def get_companies_by_query(self, query):

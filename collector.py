@@ -100,12 +100,12 @@ class Collector:
         self._driver.get(search_str)
         time.sleep(self._Msleep_seconds)
 
-    def retrieve_tweets_to_database(self, ticker_symbol, database: TweetDB):
+    def retrieve_tweets_to_database(self, searchKey, database: TweetDB):
         """
             Method to obtain tweets from driver.
 
                 Args:
-                    `ticker_symbol` (str): ticker symbol of company
+                    `searchKey` (str): search key
                     `database` (TweetDB): database instance to insert tweets in
         """
         retrieved_count = 0
@@ -171,7 +171,7 @@ class Collector:
 
                 # Add tweet to bufferedque
                 tweet = Tweet(tweet_id=tweet_id, writer=writer, post_date=post_date,
-                              body=body, ticker_symbol=ticker_symbol, comment_num=comment_num,
+                              body=body, searchKey=searchKey, comment_num=comment_num,
                               retweet_num=retweet_num, like_num=like_num)
                 overhead_tweet = bufque.add(tweet_id, tweet)
 
@@ -196,12 +196,12 @@ class Collector:
         database.insert_tweets(bufque.toList())
         print("Cannot retrieve new tweets. Finisihing...")
 
-    def retrieve_tweets_to_container(self, ticker_symbol, container: list):
+    def retrieve_tweets_to_container(self, searchKey, container: list):
         """
             Method to obtain tweets from driver.
 
                 Args:
-                    `ticker_symbol` (str): ticker symbol of company
+                    `searchKey` (str): search key of tweets
                     `container` (list)   : container instance to append tweets
         """
         retrieved_count = 0
@@ -268,7 +268,7 @@ class Collector:
                 # Add tweet to bufferedque
                 tweet = Tweet(tweet_id=tweet_id, writer=writer,
                               post_date=post_date, body=body,
-                              ticker_symbol=ticker_symbol,
+                              searchKey=searchKey,
                               comment_num=comment_num, retweet_num=retweet_num,
                               like_num=like_num)
                 overhead_tweet = bufque.add(tweet_id, tweet)

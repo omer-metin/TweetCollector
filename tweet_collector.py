@@ -11,8 +11,8 @@ from tweetDB import TweetDB
 
 argv_parser = argparse.ArgumentParser()
 # Search parameters
-argv_parser.add_argument('-c', '--company_ticker', type=str, required=True,
-                         help="company ticker that will be searched")
+argv_parser.add_argument('-k', '--searchKey', type=str, required=True,
+                         help="search key that will be searched")
 argv_parser.add_argument('-s', '--start_date', type=str, required=True,
                          help="starting date for search in YYYY-MM-DD format")
 argv_parser.add_argument('-e', '--end_date', type=str, required=True,
@@ -57,7 +57,7 @@ else:
 if not os.path.isfile(CHROMEDRIVER_PATH):
     raise ValueError(f"missing chromedriver file: {CHROMEDRIVER_PATH}")
 
-TICKER = args.company_ticker
+KEY = args.searchKey
 
 DATE_START = datetime.datetime.strptime(args.start_date, "%Y-%m-%d").date()
 DATE_END = datetime.datetime.strptime(args.end_date, "%Y-%m-%d").date()
@@ -66,7 +66,7 @@ STEP = 1
 
 print(f"Collector is starting with {THREAD_COUNT} threads.")
 
-db_conn = TweetDB(f"{TICKER}_{DATE_START}-{DATE_END}")
+db_conn = TweetDB(f"{KEY}_{DATE_START}-{DATE_END}")
 db_conn.create_tables()
 
 container_pool = [list() for _ in range(THREAD_COUNT)]
@@ -94,11 +94,11 @@ def search_tweets_by_date_to_container(date: datetime.date, container: list):
     from_ = date
     to_ = date + DAY*STEP
 
-    print(f"Collecting {TICKER}: {from_} - {to_}")
+    print(f"Collecting {KEY}: {from_} - {to_}")
 
     try:
-        collector.search(f"${TICKER}", tabName='live', from_=from_, to_=to_)
-        collector.retrieve_tweets_to_container(TICKER, container)
+        collector.search(f"${KEY}", tabName='live', from_=from_, to_=to_)
+        collector.retrieve_tweets_to_container(KEY, container)
     except WebDriverException as e:
         print(f"An error occured in browser:\n{str(e)}\nClosing browser...")
         collector.closeAll()
@@ -153,7 +153,7 @@ for _ in range(MISSING_DATES_TRIAL_COUNT):
     missing_dates = get_missing_dates(reverse_sorted=True)
     print(f"Number of missing days: {len(missing_dates)}")
 
-    if not len(missing_dates):
+    if len(missing_dates) > 0:
         break
 
     collection_process(missing_dates)

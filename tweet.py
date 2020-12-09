@@ -13,7 +13,7 @@ class Tweet:
                     `writer` (str): id of owner of the tweet
                     `post_date` (struct time): struct time of tweet's post date
                     `body` (str): content of tweet
-                    `ticker_symbol` (str)(optional): Ticker symbol of stock share
+                    `searchKey` (str)(optional): search key that tweet is found
                     `comment_num` (int)(optional): number of comments of tweet
                     `retweet_num` (int)(optional): number of retweets of tweet
                     `like_num` (int)(optional): number of likes of tweet
@@ -30,9 +30,9 @@ class Tweet:
         self.post_date = kwargs['post_date']
         self.body = kwargs['body']
         try:
-            self.ticker_symbol = kwargs['ticker_symbol']
+            self.searchKey = kwargs['searchKey']
         except KeyError:
-            self.ticker_symbol = None
+            self.searchKey = None
         try:
             self.comment_num = kwargs['comment_num']
         except KeyError:
