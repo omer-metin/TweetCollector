@@ -11,8 +11,8 @@ To collect large amount of tweet without struggling with Twitter, requires twitt
 ### Options:
  -  `h, --help`
 
- -  `-c, --company_ticker COMPANY_TICKER` (required)
-    company ticker that will be searched
+ -  `-k, --searchKey KEY` (required)
+    search key will be searched
 
  -  `-s, --start_date START_DATE` (required) 
     starting date for search in YYYY-MM-DD format
