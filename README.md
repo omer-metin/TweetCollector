@@ -1,6 +1,6 @@
 # Tweet Collector
 
-Tweet Collection script that runs with selenium. Collect tweets about stock companies (i.e. AAPL)
+Tweet Collection script that runs with selenium. Collect tweets of tags (#apple), stocks ($AAPL) and words (apple)
 
 To collect large amount of tweet without struggling with Twitter, requires twitter account. (A verified one is strongly recommended.)
 
