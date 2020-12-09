@@ -42,9 +42,13 @@ To collect large amount of tweet without struggling with Twitter, requires twitt
     re-run number for missings dates 
 
 
-# Requirements
+## Requirements
 
 - ### Selenium
     ```bash
     pip install selenium
     ```
+
+## License
+
+[MIT](https://github.com/omer-metin/TweetCollector/blob/master/LICENSE.md)
