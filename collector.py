@@ -71,7 +71,7 @@ class Collector:
         if count == 5:
             print("Failed to start and login.")
 
-    def search(self, searchKey: str, tabName="top", from_=None, to_=None) -> None:
+    def search(self, searchKey: str, tabName="top", from_=None, to_=None, lang=None) -> None:
         """
             Method that makes searchs on twitter search engine on specified tab
             and/or specific time intervals.
@@ -92,15 +92,17 @@ class Collector:
         tab_str = f"&f={tabName}" if tabName != "top" else ""
         from_str = f"%20since%3A{str(from_)}" if from_ is not None else ""
         to_str = f"%20until%3A{str(to_)}" if to_ is not None else ""
+        lang_str = f"%20lang%3A{str(lang)}" if lang is not None else ""
         searchKey = searchKey.replace(' ', '%20')
 
         search_str = BASE_URL + "search?q=" + searchKey + \
-            to_str + from_str + "&src=typed_query" + tab_str
+            to_str + from_str + lang_str + "&src=typed_query" + tab_str
 
+        print(search_str)
         self._driver.get(search_str)
         time.sleep(self._Msleep_seconds)
 
-    def retrieve_tweets_to_database(self, searchKey, database: TweetDB):
+    def retrieve_tweets_to_database(self, searchKey, database: TweetDB, lang='en'):
         """
             Method to obtain tweets from driver.
 
@@ -144,7 +146,7 @@ class Collector:
                         ".//time").get_attribute("datetime"), "%Y-%m-%dT%H:%M:%S.000Z")
                     try:
                         body = elem.find_element_by_xpath(
-                            ".//div[@lang='en' and @dir='auto']").text.replace('\n', '')
+                            f".//div[@lang='{lang}' and @dir='auto']").text.replace('\n', '')
                     except NoSuchElementException:
                         continue
                     try:
@@ -196,7 +198,7 @@ class Collector:
         database.insert_tweets(bufque.toList())
         print("Cannot retrieve new tweets. Finisihing...")
 
-    def retrieve_tweets_to_container(self, searchKey, container: list):
+    def retrieve_tweets_to_container(self, searchKey, container: list, lang='en'):
         """
             Method to obtain tweets from driver.
 
@@ -240,7 +242,7 @@ class Collector:
                         ".//time").get_attribute("datetime"), "%Y-%m-%dT%H:%M:%S.000Z")
                     try:
                         body = elem.find_element_by_xpath(
-                            ".//div[@lang='en' and @dir='auto']").text.replace('\n', '')
+                            f".//div[@lang='{lang}' and @dir='auto']").text.replace('\n', '')
                     except NoSuchElementException:
                         continue
                     try:

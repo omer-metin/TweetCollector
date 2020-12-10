@@ -20,6 +20,13 @@ argv_parser.add_argument('-s', '--start_date', type=str, required=True,
                          help="starting date for search in YYYY-MM-DD format")
 argv_parser.add_argument('-e', '--end_date', type=str, required=True,
                          help="final date for search in YYYY-MM-DD format")
+argv_parser.add_argument('-l', '--lang', type=str, default='en',
+                         choices=['en', 'ar', 'bn', 'cs', 'da', 'de', 'el',
+                                  'es', 'fa', 'fi', 'fil', 'fr', 'he', 'hi',
+                                  'hu', 'id', 'it', 'ja', 'ko', 'msa', 'nl',
+                                  'no', 'pl', 'pt', 'ro', 'ru', 'sv', 'th',
+                                  'tr', 'uk', 'ur', 'vi', 'zh-cn', 'zh-tw'],
+                         help="language of tweet to be collected")
 # Setting parameters
 argv_parser.add_argument('-f', '--settings_file', type=bool, required=True, default=True,
                          help="use settings.json file (ignore setting parameters)")
@@ -77,6 +84,8 @@ elif args.search_as == 'word':
 
 KEY = args.searchKey.replace('$', '').replace('#', '')
 
+LANG = args.lang
+
 DATE_START = datetime.datetime.strptime(args.start_date, "%Y-%m-%d").date()
 DATE_END = datetime.datetime.strptime(args.end_date, "%Y-%m-%d").date()
 DAY = datetime.timedelta(days=1)
@@ -115,8 +124,9 @@ def search_tweets_by_date_to_container(date: datetime.date, container: list):
     print(f"Collecting {KEY}: {from_} - {to_}")
 
     try:
-        collector.search(SEARCH_AS + KEY, tabName='live', from_=from_, to_=to_)
-        collector.retrieve_tweets_to_container(KEY, container)
+        collector.search(SEARCH_AS + KEY, tabName='live',
+                         from_=from_, to_=to_, lang=LANG)
+        collector.retrieve_tweets_to_container(KEY, container, lang=LANG)
     except WebDriverException as e:
         print(f"An error occured in browser:\n{str(e)}\nClosing browser...")
         collector.closeAll()

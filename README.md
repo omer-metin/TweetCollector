@@ -23,6 +23,9 @@ To collect large amount of tweet without struggling with Twitter, requires twitt
  -  `-e, --end_date END_DATE` (required)
     final date for search in YYYY-MM-DD format
 
+ -  `-l, --lang SHORTHAND_LANG` (default: _`en`_)
+    language of tweet to be collected. See [supported languages](https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages)
+
  -  `-f, --settings_file BOOL` (required) (default: _`True`_)
     use settings.json file (ignore setting parameters)
 
